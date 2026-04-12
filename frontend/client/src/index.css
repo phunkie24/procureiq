@@ -1,0 +1,71 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'DM Sans', system-ui, sans-serif;
+    background: #f4f3f0;
+    color: #1a1917;
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #d4d1ca; border-radius: 3px; }
+}
+
+@layer components {
+  .card {
+    @apply bg-white border border-border rounded-[10px] overflow-hidden;
+  }
+  .btn {
+    @apply inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium cursor-pointer border-none font-sans transition-all duration-150;
+  }
+  .btn-primary {
+    @apply bg-ink text-white hover:bg-[#333];
+  }
+  .btn-outline {
+    @apply bg-transparent text-ink-2 border border-border hover:border-border-2 hover:text-ink;
+  }
+  .nav-link {
+    @apply px-3 py-1.5 rounded-md text-[13.5px] text-ink-2 cursor-pointer transition-all duration-150 hover:bg-surface-2 hover:text-ink;
+  }
+  .nav-link.active {
+    @apply bg-ink text-white font-medium;
+  }
+  .badge {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold;
+  }
+  .sidebar-item {
+    @apply flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-all text-ink-2 text-[13px] hover:bg-surface-2 hover:text-ink;
+  }
+  .sidebar-item.active {
+    @apply bg-surface-2 text-ink font-medium;
+  }
+  .stat-card {
+    @apply card p-4 cursor-pointer transition-all duration-200 hover:shadow-md;
+  }
+  .stat-card.active {
+    @apply ring-1 ring-blue-500 border-blue-500;
+  }
+  .agent-card {
+    @apply card p-3 cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-px relative;
+  }
+  .table-row {
+    @apply border-b border-border last:border-0 hover:bg-surface-2;
+  }
+}
+
+@keyframes pulse-dot {
+  0%, 100% { box-shadow: 0 0 0 2px #fef3c7; }
+  50% { box-shadow: 0 0 0 4px #fde68a; }
+}
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-up { animation: fade-up 0.3s ease both; }
+.animate-pulse-dot { animation: pulse-dot 1.2s ease-in-out infinite; }
