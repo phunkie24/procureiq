@@ -1,10 +1,25 @@
 const router = require('express').Router()
-const mock = require('../services/MockDataService')
-router.get('/', (req, res) => res.json({ data: mock.PURCHASE_ORDERS, total: mock.PURCHASE_ORDERS.length }))
-router.get('/:id', (req, res) => {
-  const po = mock.PURCHASE_ORDERS.find(p => p._id === req.params.id)
+const mongoose = require('mongoose')
+
+const col = () => mongoose.connection.db.collection('purchaseorders')
+
+router.get('/', async (req, res) => {
+  const query = {}
+  if (req.query.status) query.status = req.query.status
+  const pos = await col().find(query).sort({ createdAt: -1 }).toArray()
+  res.json({ data: pos, total: pos.length })
+})
+
+router.get('/:id', async (req, res) => {
+  const po = await col().findOne({ _id: req.params.id })
   if (!po) return res.status(404).json({ error: 'PO not found' })
   res.json(po)
 })
-router.post('/', (req, res) => res.status(201).json({ success: true, message: 'PO creation queued' }))
+
+router.post('/', async (req, res) => {
+  const po = { _id: require('uuid').v4(), ...req.body, status: 'pending', createdAt: new Date() }
+  await col().insertOne(po)
+  res.status(201).json({ success: true, message: 'PO created', po })
+})
+
 module.exports = router

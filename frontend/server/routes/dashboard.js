@@ -1,7 +1,8 @@
 const router = require('express').Router()
-const mock = require('../services/MockDataService')
+const mongoose = require('mongoose')
 
-router.get('/stats', (req, res) => {
+router.get('/stats', async (req, res) => {
+  const hitlPending = await mongoose.connection.db.collection('hitls').countDocuments({ status: 'pending' })
   res.json({
     rfqsInitiated: 142,
     bidsReceived: 387,
@@ -9,7 +10,7 @@ router.get('/stats', (req, res) => {
     posIssued: 104,
     completed: 89,
     totalSpendNGN: 41500000000,
-    hitlPending: mock.HITL_QUEUE.filter(h => h.status === 'pending').length,
+    hitlPending,
     agentsActive: 5,
     nigerianContentAvg: 75,
   })

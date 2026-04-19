@@ -1,14 +1,28 @@
 const router = require('express').Router()
-const mock = require('../services/MockDataService')
-router.get('/', (req, res) => {
-  const pending = mock.HITL_QUEUE.filter(h => h.status === 'pending')
+const mongoose = require('mongoose')
+
+const col = () => mongoose.connection.db.collection('hitls')
+const auditCol = () => mongoose.connection.db.collection('audits')
+
+router.get('/', async (req, res) => {
+  const query = {}
+  if (req.query.type === 'hitl') {
+    const log = await auditCol().find({ isAuto: false }).sort({ createdAt: -1 }).toArray()
+    return res.json({ data: log, total: log.length })
+  }
+  const pending = await col().find({ status: 'pending' }).sort({ createdAt: -1 }).toArray()
   res.json({ data: pending, total: pending.length })
 })
-router.post('/:id/resolve', (req, res) => {
-  const item = mock.HITL_QUEUE.find(h => h._id === req.params.id)
-  if (item) { item.status = req.body.approved ? 'approved' : 'rejected'; item.resolvedAt = new Date() }
+
+router.post('/:id/resolve', async (req, res) => {
+  const status = req.body.approved ? 'approved' : 'rejected'
+  await col().updateOne(
+    { _id: req.params.id },
+    { $set: { status, resolvedAt: new Date(), resolution: req.body.notes || '' } }
+  )
   const io = req.app.get('io')
   io?.emit('hitl:resolved', { id: req.params.id, approved: req.body.approved, resolvedAt: new Date().toISOString() })
   res.json({ success: true, approved: req.body.approved })
 })
+
 module.exports = router

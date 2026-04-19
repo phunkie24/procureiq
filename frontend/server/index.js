@@ -24,6 +24,7 @@ const hitlRoutes = require('./routes/hitl')
 const auditRoutes = require('./routes/audit')
 
 const AgentEventService = require('./services/AgentEventService')
+const seedDatabase = require('./services/seedDatabase')
 
 const app = express()
 const httpServer = createServer(app)
@@ -71,9 +72,9 @@ const PORT = process.env.PORT || 5000
 
 async function start() {
   await connectDB()
+  await seedDatabase()
   httpServer.listen(PORT, () => {
     logger.info(`Server running on port ${PORT}`)
-    // Start agent event simulation
     AgentEventService.startSimulation(io)
   })
 }
